@@ -1,0 +1,8 @@
+*.png
+*.jpg
+*.jpeg
+!og-default.jpg
+!logo.png
+!no-poster.png
+!no-backdrop.png
+!no-post.png

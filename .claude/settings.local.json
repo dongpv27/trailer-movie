@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo:*)",
+      "Bash(npm install:*)",
+      "Bash(for pass in \"\" \"postgres\" \"password\" \"root\" \"123456\")",
+      "Bash(do)",
+      "Bash(PGPASSWORD=$pass psql:*)",
+      "Bash(break)",
+      "Bash(done)",
+      "Bash(npm run build:*)",
+      "Bash(docker:*)",
+      "Bash(PGPASSWORD=password psql:*)",
+      "Bash(php:*)",
+      "Bash(composer dump-autoload:*)",
+      "Bash(findstr:*)",
+      "Bash(del:*)",
+      "Bash(composer install:*)",
+      "Bash(test:*)",
+      "Bash(dir:*)",
+      "Bash(ls:*)",
+      "Bash(timeout:*)",
+      "Bash(curl:*)",
+      "Bash(composer show:*)",
+      "Bash(psql:*)",
+      "WebFetch(domain:api.themoviedb.org)",
+      "WebSearch"
+    ]
+  }
+}
