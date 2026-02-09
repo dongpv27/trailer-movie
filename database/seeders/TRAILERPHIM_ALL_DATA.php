@@ -426,7 +426,7 @@ class TRAILERPHIM_ALL_DATA extends Seeder
      */
     private function searchMovie(string $title, int $year): ?array
     {
-        $response = Http::get("{$this->tmdbBaseUrl}/search/movie", [
+        $response = Http::withoutVerifying()->get("{$this->tmdbBaseUrl}/search/movie", [
             'api_key' => $this->tmdbApiKey,
             'query' => $title,
             'year' => $year,
@@ -450,7 +450,7 @@ class TRAILERPHIM_ALL_DATA extends Seeder
      */
     private function getMovieDetails(int $tmdbId): ?array
     {
-        $response = Http::get("{$this->tmdbBaseUrl}/movie/{$tmdbId}", [
+        $response = Http::withoutVerifying()->get("{$this->tmdbBaseUrl}/movie/{$tmdbId}", [
             'api_key' => $this->tmdbApiKey,
             'language' => 'vi-VN',
             'append_to_response' => 'credits,videos,images',
@@ -468,7 +468,7 @@ class TRAILERPHIM_ALL_DATA extends Seeder
      */
     private function getMovieVideos(int $tmdbId): array
     {
-        $response = Http::get("{$this->tmdbBaseUrl}/movie/{$tmdbId}/videos", [
+        $response = Http::withoutVerifying()->get("{$this->tmdbBaseUrl}/movie/{$tmdbId}/videos", [
             'api_key' => $this->tmdbApiKey,
             'language' => 'vi-VN,en-US',
         ]);
@@ -485,7 +485,7 @@ class TRAILERPHIM_ALL_DATA extends Seeder
      */
     private function getMovieCredits(int $tmdbId): array
     {
-        $response = Http::get("{$this->tmdbBaseUrl}/movie/{$tmdbId}/credits", [
+        $response = Http::withoutVerifying()->get("{$this->tmdbBaseUrl}/movie/{$tmdbId}/credits", [
             'api_key' => $this->tmdbApiKey,
         ]);
 
@@ -726,10 +726,15 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             $isMain = (!$mainTrailerSet && $video['type'] === 'Trailer') ||
                       (!$mainTrailerSet && $index === 0);
 
+            // Generate slug from title
+            $title = $video['name'] ?? 'Trailer';
+            $slug = Str::slug($title) . '-' . $video['key'];
+
             Trailer::create([
                 'movie_id' => $movie->id,
                 'youtube_id' => $video['key'],
-                'title' => $video['name'],
+                'title' => $title,
+                'slug' => $slug,
                 'is_main' => $isMain,
             ]);
 

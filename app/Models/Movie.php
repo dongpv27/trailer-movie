@@ -40,6 +40,11 @@ class Movie extends Model
         'faq' => 'array',
     ];
 
+    /**
+     * Accessors to append to model array form.
+     */
+    protected $appends = ['url', 'year', 'poster_url', 'backdrop_url'];
+
     public function trailers(): HasMany
     {
         return $this->hasMany(Trailer::class);

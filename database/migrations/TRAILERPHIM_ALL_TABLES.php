@@ -246,6 +246,18 @@ return new class extends Migration
             $table->longText('exception');
             $table->timestamp('failed_at')->useCurrent();
         });
+
+        // ============================================
+        // TABLE: SESSIONS (Laravel default)
+        // ============================================
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
     }
 
     /**
@@ -261,6 +273,7 @@ return new class extends Migration
         }
 
         // Drop all tables in correct order (respecting foreign keys)
+        Schema::dropIfExists('sessions');
         Schema::dropIfExists('movie_streaming');
         Schema::dropIfExists('streamings');
         Schema::dropIfExists('category_movie');

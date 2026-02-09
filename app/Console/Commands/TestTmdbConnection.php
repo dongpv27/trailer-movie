@@ -50,7 +50,7 @@ class TestTmdbConnection extends Command
         $this->info('Đang test kết nối tới TMDB API...');
 
         try {
-            $response = Http::timeout(10)->get('https://api.themoviedb.org/3/configuration', [
+            $response = Http::withoutVerifying()->timeout(10)->get('https://api.themoviedb.org/3/configuration', [
                 'api_key' => $apiKey,
             ]);
 
@@ -85,7 +85,7 @@ class TestTmdbConnection extends Command
                 $this->info("Đang tìm kiếm phim: {$movieName}");
                 $this->newLine();
 
-                $searchResponse = Http::timeout(10)->get('https://api.themoviedb.org/3/search/movie', [
+                $searchResponse = Http::withoutVerifying()->timeout(10)->get('https://api.themoviedb.org/3/search/movie', [
                     'api_key' => $apiKey,
                     'query' => $movieName,
                     'language' => 'vi-VN',
@@ -130,7 +130,7 @@ class TestTmdbConnection extends Command
                 $this->info('Test tìm kiếm phim "Deadpool & Wolverine"...');
                 $this->newLine();
 
-                $testResponse = Http::timeout(10)->get('https://api.themoviedb.org/3/search/movie', [
+                $testResponse = Http::withoutVerifying()->timeout(10)->get('https://api.themoviedb.org/3/search/movie', [
                     'api_key' => $apiKey,
                     'query' => 'Deadpool & Wolverine',
                     'year' => 2024,
