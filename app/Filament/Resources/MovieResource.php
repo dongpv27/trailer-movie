@@ -80,18 +80,16 @@ class MovieResource extends Resource
 
                         Tabs\Tab::make('Hình ảnh')
                             ->schema([
-                                Forms\Components\FileUpload::make('poster')
-                                    ->label('Poster')
-                                    ->image()
-                                    ->imageEditor()
-                                    ->directory('posters')
-                                    ->visibility('public'),
-                                Forms\Components\FileUpload::make('backdrop')
-                                    ->label('Backdrop')
-                                    ->image()
-                                    ->imageEditor()
-                                    ->directory('backdrops')
-                                    ->visibility('public'),
+                                Forms\Components\TextInput::make('poster')
+                                    ->label('Poster URL')
+                                    ->url()
+                                    ->helperText('Nhập URL poster từ TMDB (VD: https://image.tmdb.org/t/p/w500/example.jpg)')
+                                    ->required(),
+                                Forms\Components\TextInput::make('backdrop')
+                                    ->label('Backdrop URL')
+                                    ->url()
+                                    ->helperText('Nhập URL backdrop từ TMDB (VD: https://image.tmdb.org/t/p/w1280/example.jpg)')
+                                    ->required(),
                             ])->columns(2),
 
                         Tabs\Tab::make('Trailers')
@@ -112,11 +110,10 @@ class MovieResource extends Resource
                                             ->required()
                                             ->maxLength(255)
                                             ->hint('VD: dQw4w9WgXcQ'),
-                                        Forms\Components\FileUpload::make('thumbnail')
-                                            ->label('Thumbnail')
-                                            ->image()
-                                            ->directory('thumbnails')
-                                            ->visibility('public'),
+                                        Forms\Components\TextInput::make('thumbnail')
+                                            ->label('Thumbnail URL')
+                                            ->url()
+                                            ->helperText('Nhập URL thumbnail từ YouTube (VD: https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg)'),
                                         Forms\Components\Toggle::make('is_main')
                                             ->label('Trailer chính')
                                             ->default(false),
