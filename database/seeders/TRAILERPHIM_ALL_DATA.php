@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Movie;
+use App\Models\Post;
+use App\Models\Streaming;
 use App\Models\Trailer;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +13,20 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
-class MoviesFrom2020Seeder extends Seeder
+/**
+ * TRAILERPHIM - ALL DATA IN ONE FILE
+ *
+ * File này tổng hợp tất cả data cần thiết cho TrailerPhim:
+ * - Categories (genres, countries, years)
+ * - Streamings (cinemas, streaming platforms)
+ * - Movies from 2020-2025 (from TMDB API)
+ *
+ * Usage: php artisan db:seed --class=TRAILERPHIM_ALL_DATA
+ *
+ * Requirements:
+ * - TMDB_API_KEY in .env file (get free at: https://www.themoviedb.org/settings/api)
+ */
+class TRAILERPHIM_ALL_DATA extends Seeder
 {
     /**
      * TMDB API Configuration
@@ -23,13 +38,6 @@ class MoviesFrom2020Seeder extends Seeder
     public function __construct()
     {
         $this->tmdbApiKey = env('TMDB_API_KEY', '');
-
-        if (empty($this->tmdbApiKey)) {
-            $this->command->error('TMDB_API_KEY not found in .env file!');
-            $this->command->warn('Please add: TMDB_API_KEY=your_key_here to your .env file');
-            $this->command->warn('Get your free API key at: https://www.themoviedb.org/settings/api');
-            exit(1);
-        }
     }
 
     /**
@@ -37,16 +45,247 @@ class MoviesFrom2020Seeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('=== Seeding Movies from 2020-2025 ===');
+        $this->command->newLine();
+        $this->command->info('========================================');
+        $this->command->info('  TRAILERPHIM - SEEDING ALL DATA');
+        $this->command->info('========================================');
+        $this->command->newLine();
 
-        // List of popular movies from 2020-2025 to seed
+        // Step 1: Seed Categories
+        $this->seedCategories();
+
+        // Step 2: Seed Streamings
+        $this->seedStreamings();
+
+        // Step 3: Seed Sample Posts
+        $this->seedPosts();
+
+        // Step 4: Seed Movies from TMDB (if API key available)
+        if (!empty($this->tmdbApiKey)) {
+            $this->seedMoviesFromTMDB();
+        } else {
+            $this->command->warn('TMDB_API_KEY not found - skipping movie seeding');
+            $this->command->info('To seed movies, add TMDB_API_KEY to .env file');
+            $this->command->info('Get your free API key at: https://www.themoviedb.org/settings/api');
+        }
+
+        $this->command->newLine();
+        $this->command->info('========================================');
+        $this->command->info('  SEEDING COMPLETE!');
+        $this->command->info('========================================');
+    }
+
+    /**
+     * Seed Categories (Genres, Countries, Years)
+     */
+    private function seedCategories(): void
+    {
+        $this->command->info('📂 Seeding Categories...');
+
+        // Genres
+        $genres = [
+            ['name' => 'Hành động', 'slug' => 'hanh-dong', 'type' => 'genre', 'description' => 'Phim hành động với những cảnh chiến đấu mãn nhãn'],
+            ['name' => 'Kinh dị', 'slug' => 'kinh-di', 'type' => 'genre', 'description' => 'Phim kinh dị, ma quái'],
+            ['name' => 'Hài hước', 'slug' => 'hai-huoc', 'type' => 'genre', 'description' => 'Phim hài hước, giải trí'],
+            ['name' => 'Tình cảm', 'slug' => 'tinh-cam', 'type' => 'genre', 'description' => 'Phim tình cảm, lãng mạn'],
+            ['name' => 'Viễn tưởng', 'slug' => 'vien-tuong', 'type' => 'genre', 'description' => 'Phim viễn tưởng, khoa học'],
+            ['name' => 'Hoạt hình', 'slug' => 'hoat-hinh', 'type' => 'genre', 'description' => 'Phim hoạt hình, anime'],
+            ['name' => 'Phiêu lưu', 'slug' => 'phieu-luu', 'type' => 'genre', 'description' => 'Phim phiêu lưu, khám phá'],
+            ['name' => 'Tội phạm', 'slug' => 'toi-pham', 'type' => 'genre', 'description' => 'Phim tội phạm, trinh thám'],
+            ['name' => 'Gia đình', 'slug' => 'gia-dinh', 'type' => 'genre', 'description' => 'Phim về gia đình'],
+            ['name' => 'Bí ẩn', 'slug' => 'bi-an', 'type' => 'genre', 'description' => 'Phim bí ẩn, thám hiểm'],
+            ['name' => 'Chiến tranh', 'slug' => 'chien-tranh', 'type' => 'genre', 'description' => 'Phim chiến tranh, lịch sử'],
+            ['name' => 'Kịch tính', 'slug' => 'kich-tinh', 'type' => 'genre', 'description' => 'Phim kịch tính, gay cấn'],
+            ['name' => 'Tài liệu', 'slug' => 'tai-lieu', 'type' => 'genre', 'description' => 'Phim tài liệu'],
+            ['name' => 'Thể thao', 'slug' => 'the-thao', 'type' => 'genre', 'description' => 'Phim về thể thao'],
+        ];
+
+        // Countries
+        $countries = [
+            ['name' => 'Việt Nam', 'slug' => 'viet-nam', 'type' => 'country'],
+            ['name' => 'Hàn Quốc', 'slug' => 'han-quoc', 'type' => 'country'],
+            ['name' => 'Mỹ', 'slug' => 'my', 'type' => 'country'],
+            ['name' => 'Trung Quốc', 'slug' => 'trung-quoc', 'type' => 'country'],
+            ['name' => 'Nhật Bản', 'slug' => 'nhat-ban', 'type' => 'country'],
+            ['name' => 'Thái Lan', 'slug' => 'thai-lan', 'type' => 'country'],
+            ['name' => 'Anh', 'slug' => 'anh', 'type' => 'country'],
+            ['name' => 'Pháp', 'slug' => 'phap', 'type' => 'country'],
+            ['name' => 'Đức', 'slug' => 'duc', 'type' => 'country'],
+            ['name' => 'Úc', 'slug' => 'uc', 'type' => 'country'],
+            ['name' => 'Canada', 'slug' => 'canada', 'type' => 'country'],
+            ['name' => 'Ấn Độ', 'slug' => 'an-do', 'type' => 'country'],
+            ['name' => 'Indonesia', 'slug' => 'indonesia', 'type' => 'country'],
+            ['name' => 'Philippines', 'slug' => 'philippines', 'type' => 'country'],
+        ];
+
+        // Years (last 10 years + current year + next year)
+        $years = [];
+        $currentYear = (int) date('Y');
+        for ($i = $currentYear + 1; $i >= $currentYear - 10; $i--) {
+            $years[] = [
+                'name' => (string) $i,
+                'slug' => (string) $i,
+                'type' => 'year',
+                'description' => "Phim ra mắt năm {$i}",
+            ];
+        }
+
+        $totalCategories = count($genres) + count($countries) + count($years);
+        $createdCount = 0;
+
+        foreach ($genres as $genre) {
+            $category = Category::firstOrCreate(
+                ['slug' => $genre['slug']],
+                $genre
+            );
+            if ($category->wasRecentlyCreated) $createdCount++;
+        }
+
+        foreach ($countries as $country) {
+            $category = Category::firstOrCreate(
+                ['slug' => $country['slug']],
+                $country
+            );
+            if ($category->wasRecentlyCreated) $createdCount++;
+        }
+
+        foreach ($years as $year) {
+            $category = Category::firstOrCreate(
+                ['slug' => $year['slug']],
+                $year
+            );
+            if ($category->wasRecentlyCreated) $createdCount++;
+        }
+
+        $this->command->info("   Created {$createdCount}/{$totalCategories} categories");
+    }
+
+    /**
+     * Seed Streamings (Cinemas & Streaming Platforms)
+     */
+    private function seedStreamings(): void
+    {
+        $this->command->info('🎬 Seeding Streamings...');
+
+        $cinemas = [
+            ['name' => 'CGV', 'url' => 'https://www.cgv.vn'],
+            ['name' => 'Lotte Cinema', 'url' => 'https://www.lottecinema.vn'],
+            ['name' => 'Galaxy Cinema', 'url' => 'https://galaxycine.vn'],
+            ['name' => 'Beta Cinemas', 'url' => 'https://beta.com.vn'],
+            ['name' => 'Cinestar', 'url' => 'https://cinestar.com.vn'],
+        ];
+
+        $streamingPlatforms = [
+            ['name' => 'Netflix', 'icon' => 'play-circle', 'url' => 'https://www.netflix.com'],
+            ['name' => 'Disney+', 'icon' => 'film', 'url' => 'https://www.disneyplus.com'],
+            ['name' => 'HBO Go', 'icon' => 'video-camera', 'url' => 'https://www.hbogo.com'],
+            ['name' => 'Prime Video', 'icon' => 'play', 'url' => 'https://www.primevideo.com'],
+            ['name' => 'Apple TV+', 'icon' => 'tv', 'url' => 'https://www.apple.com/apple-tv-plus'],
+        ];
+
+        $sortOrder = 1;
+        $createdCount = 0;
+
+        // Create cinemas
+        foreach ($cinemas as $cinema) {
+            $streaming = Streaming::updateOrCreate(
+                ['slug' => Str::slug($cinema['name'])],
+                [
+                    'name' => $cinema['name'],
+                    'slug' => Str::slug($cinema['name']),
+                    'type' => 'cinema',
+                    'icon' => 'logo',
+                    'url' => $cinema['url'],
+                    'is_active' => true,
+                    'sort_order' => $sortOrder++,
+                ]
+            );
+            if ($streaming->wasRecentlyCreated) $createdCount++;
+        }
+
+        // Create streaming platforms
+        foreach ($streamingPlatforms as $platform) {
+            $streaming = Streaming::updateOrCreate(
+                ['slug' => Str::slug($platform['name'])],
+                [
+                    'name' => $platform['name'],
+                    'slug' => Str::slug($platform['name']),
+                    'type' => 'streaming',
+                    'icon' => 'logo',
+                    'url' => $platform['url'],
+                    'is_active' => true,
+                    'sort_order' => $sortOrder++,
+                ]
+            );
+            if ($streaming->wasRecentlyCreated) $createdCount++;
+        }
+
+        $this->command->info("   Created {$createdCount}/" . (count($cinemas) + count($streamingPlatforms)) . " streamings");
+    }
+
+    /**
+     * Seed Sample Posts
+     */
+    private function seedPosts(): void
+    {
+        $this->command->info('📰 Seeding Sample Posts...');
+
+        $posts = [
+            [
+                'title' => 'Top 10 phim hành động hay nhất 2024',
+                'slug' => 'top-10-phim-hanh-dong-hay-nhat-2024',
+                'excerpt' => 'Tổng hợp những bộ phim hành động xuất sắc nhất năm 2024 không thể bỏ lỡ.',
+                'content' => 'Năm 2024 là một năm bùng nổ của dòng phim hành động với những siêu phẩm như "Deadpool & Wolverine", "Gladiator 2"...',
+                'status' => 'published',
+                'published_at' => now()->subDays(7),
+            ],
+            [
+                'title' => 'Review: Dune Part Two - Kiệt tác sci-fi của thập niên',
+                'slug' => 'review-dune-part-two-kiet-tac-sci-fi',
+                'excerpt' => 'Đánh giá chi tiết về Dune: Part Two - bộ phim khoa học viễn tưởng được mong chờ nhất năm.',
+                'content' => 'Dune: Part Two của Denis Villeneuve đã vượt qua mọi kỳ vọng... Tác phẩm tiếp tục hành trình của Paul Atreides...',
+                'status' => 'published',
+                'published_at' => now()->subDays(5),
+            ],
+            [
+                'title' => 'Trailer phim sắp chiếu tháng 3/2025',
+                'slug' => 'trailer-phim-sap-chieu-thang-3-2025',
+                'excerpt' => 'Tổng hợp những trailer phim hay nhất sẽ ra mắt trong tháng 3/2025.',
+                'content' => 'Tháng 3/2025 hứa hẹn mang đến những bom tấn đáng mong chờ như Captain America: Brave New World...',
+                'status' => 'published',
+                'published_at' => now()->subDays(2),
+            ],
+        ];
+
+        $createdCount = 0;
+        foreach ($posts as $post) {
+            $postObj = Post::firstOrCreate(
+                ['slug' => $post['slug']],
+                array_merge($post, ['view_count' => 0])
+            );
+            if ($postObj->wasRecentlyCreated) $createdCount++;
+        }
+
+        $this->command->info("   Created {$createdCount}/" . count($posts) . " posts");
+    }
+
+    /**
+     * Seed Movies from TMDB API
+     */
+    private function seedMoviesFromTMDB(): void
+    {
+        $this->command->newLine();
+        $this->command->info('🎥 Seeding Movies from TMDB...');
+        $this->command->newLine();
+
+        // List of popular movies from 2020-2025
         $moviesToSeed = [
             // 2025
             ['title' => 'Captain America: Brave New World', 'year' => 2025],
             ['title' => 'Mission: Impossible 8', 'year' => 2025],
             ['title' => 'Avatar 3', 'year' => 2025],
-            ['title' => 'The SpongeBob Movie: Search for SquarePants', 'year' => 2025],
             ['title' => 'Thunderbolts', 'year' => 2025],
+            ['title' => 'The SpongeBob Movie: Search for SquarePants', 'year' => 2025],
 
             // 2024
             ['title' => 'Deadpool & Wolverine', 'year' => 2024],
@@ -108,7 +347,7 @@ class MoviesFrom2020Seeder extends Seeder
         $skipCount = 0;
 
         foreach ($moviesToSeed as $index => $movieInfo) {
-            $this->command->info("Processing [{$index}/{$totalMovies}]: {$movieInfo['title']} ({$movieInfo['year']})");
+            $progress = $this->createProgressBar($index + 1, $totalMovies, $movieInfo['title'], $movieInfo['year']);
 
             try {
                 // Check if movie already exists
@@ -116,7 +355,7 @@ class MoviesFrom2020Seeder extends Seeder
                 $existingMovie = Movie::where('slug', $slug)->first();
 
                 if ($existingMovie) {
-                    $this->command->warn("  - Skipped (already exists)");
+                    $this->command->line($progress . " <fg=yellow>SKIP</> (already exists)");
                     $skipCount++;
                     continue;
                 }
@@ -125,7 +364,7 @@ class MoviesFrom2020Seeder extends Seeder
                 $searchResult = $this->searchMovie($movieInfo['title'], $movieInfo['year']);
 
                 if (!$searchResult) {
-                    $this->command->error("  - Not found on TMDB");
+                    $this->command->line($progress . " <fg=red>FAIL</> (not found on TMDB)");
                     continue;
                 }
 
@@ -133,7 +372,7 @@ class MoviesFrom2020Seeder extends Seeder
                 $movieDetails = $this->getMovieDetails($searchResult['id']);
 
                 if (!$movieDetails) {
-                    $this->command->error("  - Failed to fetch details");
+                    $this->command->line($progress . " <fg=red>FAIL</> (failed to fetch details)");
                     continue;
                 }
 
@@ -153,23 +392,33 @@ class MoviesFrom2020Seeder extends Seeder
                 $this->attachCategories($movie, $movieDetails);
 
                 $successCount++;
-                $this->command->info("  - Created: {$movie->title}");
+                $this->command->line($progress . " <fg=green>OK</>");
 
-                // Rate limiting: sleep between requests to avoid hitting TMDB rate limits
-                usleep(250000); // 0.25 seconds between requests
+                // Rate limiting: sleep between requests
+                usleep(250000); // 0.25 seconds
 
             } catch (\Exception $e) {
-                $this->command->error("  - Error: {$e->getMessage()}");
+                $this->command->line($progress . " <fg=red>ERROR</> " . $e->getMessage());
                 continue;
             }
         }
 
         $this->command->newLine();
-        $this->command->info('=== Seeding Complete ===');
-        $this->command->info("Total processed: {$totalMovies}");
-        $this->command->info("Successfully created: {$successCount}");
-        $this->command->info("Skipped (already exists): {$skipCount}");
-        $this->command->info("Failed: " . ($totalMovies - $successCount - $skipCount));
+        $this->command->info("   Total: {$totalMovies} | Created: {$successCount} | Skipped: {$skipCount} | Failed: " . ($totalMovies - $successCount - $skipCount));
+    }
+
+    /**
+     * Create progress bar for seeder output
+     */
+    private function createProgressBar(int $current, int $total, string $title, int $year): string
+    {
+        $percentage = round(($current / $total) * 100);
+        $progressBar = str_repeat('=', min(20, (int) ($percentage / 5))) . '>';
+        $progressBar = str_pad($progressBar, 21, ' ');
+
+        return "   [<fg=cyan>{$progressBar}</>] " .
+               str_pad("{$current}/{$total}", 8, ' ', STR_PAD_LEFT) . " " .
+               "<fg=white>{$title}</> ({$year})";
     }
 
     /**
@@ -189,12 +438,11 @@ class MoviesFrom2020Seeder extends Seeder
         }
 
         $results = $response->json('results', []);
-
         if (empty($results)) {
             return null;
         }
 
-        return $results[0]; // Return first (most relevant) result
+        return $results[0];
     }
 
     /**
@@ -331,7 +579,7 @@ class MoviesFrom2020Seeder extends Seeder
             $genres = collect($details['genres'])->pluck('name')->toArray();
         }
 
-        // Extract director for FAQ
+        // Extract director
         $directorName = '';
         if (isset($credits['crew'])) {
             $directors = collect($credits['crew'])->filter(fn($person) => $person['job'] === 'Director');
@@ -369,7 +617,7 @@ class MoviesFrom2020Seeder extends Seeder
         // Otherwise, generate generic content
         $genreText = !empty($genres) ? implode(', ', $genres) : 'điện ảnh';
 
-        $content = "{$title} là một trong những tác phẩm {$genreText} được mong chờ nhất. Với bối cảnh được xây dựng công phu và câu chuyện đầy kịch tính, bộ phim hứa hẹn mang đến những trải nghiệm thị giác mãn nhãn cho khán giả. ";
+        $content = "{$title} là một trong những tác phẩm {$genreText} được mong chợi nhất. Với bối cảnh được xây dựng công phu và câu chuyện đầy kịch tính, bộ phim hứa hẹn mang đến những trải nghiệm thị giác mãn nhãn cho khán giả. ";
 
         $content .= "Nhân vật chính sẽ phải đối mặt với những thử thách cam go, nơi mọi quyết định đều ảnh hưởng đến số phận của nhiều người. Xung đột nội tại và ngoại tại được khắc họa sâu sắc qua từng diễn biến của cốt truyện. ";
 

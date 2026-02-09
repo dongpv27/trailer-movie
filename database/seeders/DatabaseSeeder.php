@@ -10,25 +10,26 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
+    /**
+     * TRAILERPHIM - Database Seeder
+     *
+     * Sử dụng 1 file duy nhất để seed toàn bộ data:
+     * - Categories (genres, countries, years)
+     * - Streamings (cinemas, streaming platforms)
+     * - Movies from 2020-2025 (via TMDB API)
+     * - Sample posts
+     *
+     * Yêu cầu:
+     * - TMDB_API_KEY trong file .env (lấy miễn phí tại: https://www.themoviedb.org/settings/api)
+     *
+     * Usage:
+     *   php artisan db:seed --class=TRAILERPHIM_ALL_DATA
+     */
     public function run(): void
     {
-        // Sử dụng seeder tổng hợp - chạy tất cả trong 1 file
+        // Seeder tổng hợp - chạy 1 file là đủ
         $this->call([
-            \Database\Seeders\TRAILERPHIM_INSTALL::class,
+            TRAILERPHIM_ALL_DATA::class,
         ]);
-
-        // Nếu muốn thêm dữ liệu mẫu (movies, posts), chạy các seeder riêng:
-        // $this->call([
-        //     MovieSeeder::class,
-        //     Movies2025Seeder::class,
-        //     Movies2026Seeder::class,
-        //     PostSeeder::class,
-        //     MovieStreamingSeeder::class,
-        // ]);
-
-        // Seeder để import phim từ 2020-2025 từ TMDB
-        // $this->call([
-        //     MoviesFrom2020Seeder::class,
-        // ]);
     }
 }
