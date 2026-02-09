@@ -12,30 +12,23 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        // Sử dụng seeder tổng hợp - chạy tất cả trong 1 file
         $this->call([
-            CategorySeeder::class,
-            MovieSeeder::class,
-            PostSeeder::class,
+            \Database\Seeders\TRAILERPHIM_INSTALL::class,
         ]);
 
-        // Movies 2025 from TMDB
-        $this->call([
-            Movies2025Seeder::class,
-        ]);
+        // Nếu muốn thêm dữ liệu mẫu (movies, posts), chạy các seeder riêng:
+        // $this->call([
+        //     MovieSeeder::class,
+        //     Movies2025Seeder::class,
+        //     Movies2026Seeder::class,
+        //     PostSeeder::class,
+        //     MovieStreamingSeeder::class,
+        // ]);
 
-        // Movies 2026
-        $this->call([
-            Movies2026Seeder::class,
-        ]);
-
-        // Admin user for Filament
-        User::firstOrCreate(
-            ['email' => 'admin@trailerphim.com'],
-            [
-                'name' => 'Admin',
-                'password' => bcrypt('password'),
-                'email_verified_at' => now(),
-            ]
-        );
+        // Seeder để import phim từ 2020-2025 từ TMDB
+        // $this->call([
+        //     MoviesFrom2020Seeder::class,
+        // ]);
     }
 }

@@ -15,6 +15,7 @@ Route::get('/phim-hot', [MovieController::class, 'hot'])->name('movie.hot');
 Route::get('/trailer-sap-chieu', [MovieController::class, 'upcoming'])->name('movie.upcoming');
 Route::get('/trailer-dang-chieu', [MovieController::class, 'released'])->name('movie.released');
 Route::get('/top-phim', [MovieController::class, 'top'])->name('movie.top');
+Route::get('/tim-kiem', [MovieController::class, 'search'])->name('movie.search');
 Route::get('/phim/{slug}', [MovieController::class, 'show'])->name('movie.show');
 
 // Category routes
@@ -30,3 +31,6 @@ Route::get('/tin-dien-anh/{slug}', [PostController::class, 'show'])->name('post.
 
 // Sitemap
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+// Debug routes
+require_once __DIR__ . '/check_movie.php';

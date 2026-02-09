@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MovieResource\Pages;
+use App\Filament\Resources\MovieResource\RelationManagers;
 use App\Models\Movie;
 use Filament\Actions;
 use Filament\Forms;
@@ -68,6 +69,13 @@ class MovieResource extends Resource
                                     ->label('Thời lượng (phút)')
                                     ->numeric()
                                     ->default(0),
+                                Forms\Components\TextInput::make('director')
+                                    ->label('Đạo diễn')
+                                    ->maxLength(255),
+                                Forms\Components\Textarea::make('cast')
+                                    ->label('Diễn viên chính')
+                                    ->rows(2)
+                                    ->helperText('Các diễn viên chính, ngăn cách bằng dấu phẩy'),
                             ])->columns(2),
 
                         Tabs\Tab::make('Hình ảnh')
@@ -125,6 +133,16 @@ class MovieResource extends Resource
                                     ->multiple()
                                     ->preload()
                                     ->label('Danh mục')
+                                    ->searchable(),
+                            ]),
+
+                        Tabs\Tab::make('Nơi xem')
+                            ->schema([
+                                Forms\Components\Select::make('streamings')
+                                    ->relationship('streamings', 'name')
+                                    ->multiple()
+                                    ->preload()
+                                    ->label('Nền tảng')
                                     ->searchable(),
                             ]),
 
@@ -212,7 +230,7 @@ class MovieResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\StreamingRelationManager::class,
         ];
     }
 

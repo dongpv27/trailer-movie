@@ -23,7 +23,7 @@
             </a>
             @endif
             <div class="p-5">
-                <h2 class="mb-3 text-xl font-semibold hover:text-red-500 transition">
+                <h2 class="mb-3 text-xl font-semibold hover:text-yellow-400 transition">
                     <a href="{{ $post->url }}">{{ $post->title }}</a>
                 </h2>
                 @if($post->excerpt)

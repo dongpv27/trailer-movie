@@ -88,7 +88,7 @@
                              loading="lazy" class="h-full w-full object-cover">
                     </a>
                     @endif
-                    <h4 class="mb-2 font-semibold hover:text-red-500 transition">
+                    <h4 class="mb-2 font-semibold hover:text-yellow-400 transition">
                         <a href="{{ $relatedPost->url }}">{{ $relatedPost->title }}</a>
                     </h4>
                     <div class="text-xs text-gray-500">

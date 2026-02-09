@@ -31,7 +31,7 @@
                         </div>
                         <div class="mt-6 flex flex-wrap gap-3">
                             <a :href="movie.url"
-                               class="inline-flex items-center gap-2 rounded bg-red-600 px-6 py-3 font-semibold hover:bg-red-700 transition">
+                               class="inline-flex items-center gap-2 rounded bg-yellow-500 px-6 py-3 font-semibold hover:bg-yellow-600 transition">
                                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 5v14l11-7z"/>
                                 </svg>
@@ -44,12 +44,12 @@
         </template>
 
         <!-- Navigation Arrows -->
-        <button @click="previousSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 hover:bg-red-600 transition md:left-8">
+        <button @click="previousSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 hover:bg-yellow-500 transition md:left-8">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
         </button>
-        <button @click="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 hover:bg-red-600 transition md:right-8">
+        <button @click="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 hover:bg-yellow-500 transition md:right-8">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
@@ -59,7 +59,7 @@
         <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
             <template x-for="(movie, index) in movies" :key="index">
                 <button @click="goToSlide(index)"
-                        :class="currentSlide === index ? 'bg-red-600 w-8' : 'bg-gray-500 w-2'"
+                        :class="currentSlide === index ? 'bg-yellow-500 w-8' : 'bg-gray-500 w-2'"
                         class="h-2 rounded-full transition">
                 </button>
             </template>

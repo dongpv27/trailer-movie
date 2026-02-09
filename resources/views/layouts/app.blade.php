@@ -60,7 +60,8 @@
     @endisset
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,27 +89,58 @@
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-gray-900/95 backdrop-blur border-b border-gray-800">
         <nav class="container mx-auto px-4 py-3">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-4">
                 <!-- Logo -->
-                <a href="{{ route('home') }}" class="flex items-center gap-2">
-                    <svg class="w-10 h-10 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('home') }}" class="flex items-center gap-2 flex-shrink-0">
+                    <svg class="w-10 h-10 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
                     </svg>
-                    <span class="text-xl font-bold">Trailer<span class="text-red-500">Phim</span></span>
+                    <span class="text-xl font-bold hidden sm:block">Trailer<span class="text-yellow-400">Phim</span></span>
                 </a>
 
+                <!-- Search Bar -->
+                <div x-data="{
+                    open: false,
+                    searchQuery: '',
+                    submitSearch() {
+                        if (this.searchQuery.trim()) {
+                            window.location.href = '{{ route('movie.search') }}?q=' + encodeURIComponent(this.searchQuery);
+                        }
+                    }
+                }" class="flex-1 max-w-2xl">
+                    <form @submit.prevent="submitSearch()" class="relative">
+                        <input
+                            type="text"
+                            x-model="searchQuery"
+                            placeholder="Tìm phim, diễn viên, đạo diễn, năm phát hành..."
+                            class="w-full px-4 py-2 pl-10 pr-10 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition"
+                        >
+                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <button
+                            type="submit"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-yellow-400 transition"
+                            aria-label="Tìm kiếm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center gap-6">
-                    <a href="{{ route('home') }}" class="hover:text-red-500 transition">Trang chủ</a>
-                    <a href="{{ route('movie.hot') }}" class="hover:text-red-500 transition">Phim Hot</a>
-                    <a href="{{ route('category.upcoming') }}" class="hover:text-red-500 transition">Sắp chiếu</a>
-                    <a href="{{ route('category.released') }}" class="hover:text-red-500 transition">Đang chiếu</a>
-                    <a href="{{ route('post.index') }}" class="hover:text-red-500 transition">Tin điện ảnh</a>
+                <div class="hidden lg:flex items-center gap-4 flex-shrink-0">
+                    <a href="{{ route('home') }}" class="hover:text-yellow-400 transition text-sm">Trang chủ</a>
+                    <a href="{{ route('movie.hot') }}" class="hover:text-yellow-400 transition text-sm">Phim Hot</a>
+                    <a href="{{ route('category.upcoming') }}" class="hover:text-yellow-400 transition text-sm">Sắp chiếu</a>
+                    <a href="{{ route('category.released') }}" class="hover:text-yellow-400 transition text-sm">Đang chiếu</a>
+                    <a href="{{ route('post.index') }}" class="hover:text-yellow-400 transition text-sm">Tin điện ảnh</a>
                 </div>
 
                 <!-- Mobile Menu Button -->
                 <button type="button" x-data="{ open: false }" @click="open = !open"
-                    class="md:hidden p-2 hover:bg-gray-800 rounded">
+                    class="lg:hidden p-2 hover:bg-gray-800 rounded flex-shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
@@ -117,13 +149,13 @@
 
             <!-- Mobile Menu -->
             <div x-data="{ open: false }" x-show="open" @click.away="open = false"
-                class="md:hidden mt-4 pb-4 border-t border-gray-800 pt-4 hidden">
+                class="lg:hidden mt-4 pb-4 border-t border-gray-800 pt-4 hidden">
                 <div class="flex flex-col gap-3">
-                    <a href="{{ route('home') }}" class="hover:text-red-500 transition">Trang chủ</a>
-                    <a href="{{ route('movie.hot') }}" class="hover:text-red-500 transition">Phim Hot</a>
-                    <a href="{{ route('category.upcoming') }}" class="hover:text-red-500 transition">Sắp chiếu</a>
-                    <a href="{{ route('category.released') }}" class="hover:text-red-500 transition">Đang chiếu</a>
-                    <a href="{{ route('post.index') }}" class="hover:text-red-500 transition">Tin điện ảnh</a>
+                    <a href="{{ route('home') }}" class="hover:text-yellow-400 transition">Trang chủ</a>
+                    <a href="{{ route('movie.hot') }}" class="hover:text-yellow-400 transition">Phim Hot</a>
+                    <a href="{{ route('category.upcoming') }}" class="hover:text-yellow-400 transition">Sắp chiếu</a>
+                    <a href="{{ route('category.released') }}" class="hover:text-yellow-400 transition">Đang chiếu</a>
+                    <a href="{{ route('post.index') }}" class="hover:text-yellow-400 transition">Tin điện ảnh</a>
                 </div>
             </div>
         </nav>
@@ -134,6 +166,25 @@
         @yield('content')
     </main>
 
+    <!-- Go to Top Button -->
+    <button
+        x-data="{
+            show: false,
+            scrollToTop() {
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+            }
+        }"
+        x-show="show"
+        @scroll.window="show = (window.pageYOffset > 300)"
+        @click="scrollToTop()"
+        class="fixed bottom-6 right-6 z-50 p-3 bg-yellow-500 hover:bg-yellow-600 text-gray-900 rounded-full shadow-lg transition-all duration-300"
+        aria-label="Lên đầu trang"
+        style="display: none;">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+        </svg>
+    </button>
+
     <!-- Footer -->
     <footer class="bg-gray-800 mt-16 py-12 border-t border-gray-700">
         <div class="container mx-auto px-4">
@@ -141,10 +192,10 @@
                 <!-- About -->
                 <div>
                     <div class="flex items-center gap-2 mb-4">
-                        <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M8 5v14l11-7z"/>
                         </svg>
-                        <span class="text-lg font-bold">Trailer<span class="text-red-500">Phim</span></span>
+                        <span class="text-lg font-bold">Trailer<span class="text-yellow-400">Phim</span></span>
                     </div>
                     <p class="text-gray-400 text-sm">
                         Website xem trailer phim mới nhất, cập nhật liên tục. Tổng hợp trailer phim chiếu rạp, phim Netflix, HBO...

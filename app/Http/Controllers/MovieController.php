@@ -10,8 +10,9 @@ class MovieController extends Controller
 {
     public function show(string $slug)
     {
-        $movie = Movie::with(['trailers', 'categories', 'genres', 'countries'])
+        $movie = Movie::select('*')
             ->where('slug', $slug)
+            ->with(['trailers', 'categories', 'genres', 'countries', 'streamings'])
             ->firstOrFail();
 
         // Increment view count
@@ -109,5 +110,59 @@ class MovieController extends Controller
         $seoDescription = 'Top các bộ phim được xem nhiều nhất trên TrailerPhim. Tổng hợp trailer phim hot nhất hiện nay.';
 
         return view('movie.list', compact('movies', 'seoTitle', 'seoDescription'));
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+
+        if (empty($query)) {
+            return redirect()->route('home');
+        }
+
+        // Trim query
+        $query = trim($query);
+
+        // Handle very short queries
+        if (strlen($query) < 2) {
+            $movies = Movie::query()->whereRaw('1 = 0')->paginate(24);
+            $movies->appends(['q' => $query]);
+
+            $seoTitle = "Tìm kiếm: {$query} - Từ khóa quá ngắn";
+            $seoDescription = "Từ khóa tìm kiếm quá ngắn. Vui lòng nhập ít nhất 2 ký tự.";
+
+            return view('movie.list', compact('movies', 'seoTitle', 'seoDescription', 'query'));
+        }
+
+        // Use full-text search with relevance scoring
+        $movies = Movie::published()
+            ->with(['categories', 'mainTrailer'])
+            ->fullSearch($query)
+            ->paginate(24);
+
+        // Preserve query string for pagination
+        $movies->appends(['q' => $query]);
+
+        $seoTitle = "Tìm kiếm: {$query} - Kết quả tìm kiếm phim";
+        $seoDescription = "Kết quả tìm kiếm phim với từ khóa: {$query}. Tìm phim theo tên, diễn viên, đạo diễn, năm phát hành, thể loại, quốc gia.";
+
+        // Get suggestions if no results found
+        $suggestions = null;
+        if ($movies->isEmpty()) {
+            $suggestions = [
+                'hotMovies' => Movie::hot()
+                    ->with(['categories', 'mainTrailer'])
+                    ->orderByDesc('view_count')
+                    ->limit(6)
+                    ->get(),
+                'popularGenres' => Category::where('type', 'genre')
+                    ->withCount('movies')
+                    ->orderByDesc('movies_count')
+                    ->limit(8)
+                    ->get(),
+            ];
+        }
+
+        return view('movie.list', compact('movies', 'seoTitle', 'seoDescription', 'query', 'suggestions'));
     }
 }

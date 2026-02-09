@@ -28,7 +28,7 @@
             class="absolute inset-0 flex items-center justify-center group"
             aria-label="Play trailer"
         >
-            <div class="flex h-20 w-20 items-center justify-center rounded-full bg-red-600 transition group-hover:scale-110 group-hover:bg-red-700 shadow-lg">
+            <div class="flex h-20 w-20 items-center justify-center rounded-full bg-yellow-500 transition group-hover:scale-110 group-hover:bg-yellow-600 shadow-lg">
                 <svg class="ml-2 h-10 w-10 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                 </svg>

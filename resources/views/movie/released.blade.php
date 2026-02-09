@@ -47,7 +47,7 @@
 
         <!-- Internal Links -->
         <div class="flex flex-wrap gap-3 mt-6">
-            <a href="{{ route('movie.hot') }}" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition">
+            <a href="{{ route('movie.hot') }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 rounded-lg transition">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -67,7 +67,7 @@
     @if($movies->isNotEmpty())
     <section class="mb-12">
         <h2 class="text-2xl font-bold mb-6 flex items-center">
-            <span class="w-2 h-8 bg-red-600 rounded mr-3"></span>
+            <span class="w-2 h-8 bg-yellow-500 rounded mr-3"></span>
             Danh sách phim đang chiếu
         </h2>
 
@@ -85,7 +85,7 @@
 
                     <!-- Info -->
                     <div class="p-3">
-                        <h3 class="font-semibold text-sm line-clamp-2 group-hover:text-red-500 transition">
+                        <h3 class="font-semibold text-sm line-clamp-2 group-hover:text-yellow-400 transition">
                             {{ $movie->title }}
                             @if($movie->release_date && $movie->release_date->year)
                             <span class="text-gray-500 text-xs">({{ $movie->release_date->year }})</span>

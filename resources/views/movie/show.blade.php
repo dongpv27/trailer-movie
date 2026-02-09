@@ -51,7 +51,7 @@
             @if($movie->trailers->isNotEmpty())
             <section>
                 <h2 class="mb-4 text-2xl font-bold flex items-center">
-                    <span class="w-2 h-8 bg-red-600 rounded mr-3"></span>
+                    <span class="w-2 h-8 bg-yellow-500 rounded mr-3"></span>
                     Official Trailer
                 </h2>
                 <div class="space-y-4">
@@ -92,13 +92,31 @@
                     </div>
                 </div>
 
+                <!-- Director & Cast -->
+                @if($movie->director || $movie->cast)
+                <div class="mt-4 grid md:grid-cols-2 gap-4 text-sm">
+                    @if($movie->director)
+                    <div>
+                        <span class="text-gray-400">Đạo diễn</span>
+                        <p class="font-semibold">{{ $movie->director }}</p>
+                    </div>
+                    @endif
+                    @if($movie->cast)
+                    <div>
+                        <span class="text-gray-400">Diễn viên</span>
+                        <p class="font-semibold">{{ $movie->cast }}</p>
+                    </div>
+                    @endif
+                </div>
+                @endif
+
                 <!-- Genres -->
                 @if($movie->genres->isNotEmpty())
                 <div class="mt-4">
                     <span class="text-gray-400 text-sm">Thể loại: </span>
                     <div class="flex flex-wrap gap-2 mt-2">
                         @foreach($movie->genres as $genre)
-                        <a href="{{ route('category.genre', $genre->slug) }}" class="rounded bg-red-600/20 px-3 py-1 text-sm text-red-400 hover:bg-red-600/30 transition">
+                        <a href="{{ route('category.genre', $genre->slug) }}" class="rounded bg-yellow-500/20 px-3 py-1 text-sm text-yellow-400 hover:bg-yellow-500/30 transition">
                             {{ $genre->name }}
                         </a>
                         @endforeach
@@ -190,11 +208,23 @@
                     @else
                     <div>
                         <h3 class="font-semibold text-white mb-2">Phim {{ $movie->title }} khi nào chiếu?</h3>
-                        <p class="text-gray-300">@if($movie->release_date)Phim khởi chiếu vào {{ $movie->release_date->format('d/m/Y') }}.@elseThời gian chiếu cụ thể sẽ được cập nhật khi có thông tin chính thức từ nhà phát hành.@endif</p>
+                        <p class="text-gray-300">
+                        @if($movie->release_date)
+                            Phim khởi chiếu vào {{ $movie->release_date->format('d/m/Y') }}.
+                        @else
+                            Thời gian chiếu cụ thể sẽ được cập nhật khi có thông tin chính thức từ nhà phát hành.
+                        @endif
+                    </p>
                     </div>
                     <div>
                         <h3 class="font-semibold text-white mb-2">Trailer phim {{ $movie->title }} đã ra chưa?</h3>
-                        <p class="text-gray-300">@if($movie->trailers->isNotEmpty())Có, trailer chính thức của {{ $movie->title }} đã được công bố. Bạn có thể xem trailer ngay trên trang này.@elseTrailer chính thức sẽ được cập nhật ngay khi nhà phát hành công bố.@endif</p>
+                        <p class="text-gray-300">
+                        @if($movie->trailers->isNotEmpty())
+                            Có, trailer chính thức của {{ $movie->title }} đã được công bố. Bạn có thể xem trailer ngay trên trang này.
+                        @else
+                            Trailer chính thức sẽ được cập nhật ngay khi nhà phát hành công bố.
+                        @endif
+                    </p>
                     </div>
                     @if($movie->genres->isNotEmpty())
                     <div>
@@ -212,8 +242,11 @@
             <!-- Poster -->
             <div class="rounded-lg bg-gray-800 overflow-hidden">
                 <img src="{{ $movie->poster_url }}" alt="{{ $movie->title }} - Poster"
-                     class="w-full">
+                     class="w-full h-auto">
             </div>
+
+            <!-- Streaming Info -->
+            <x-streaming-info :movie="$movie" />
 
             <!-- Internal Links -->
             <nav class="rounded-lg bg-gray-800 p-4" aria-label="Điều hướng">
@@ -266,7 +299,7 @@
     @if(isset($relatedMovies) && $relatedMovies->isNotEmpty())
     <section class="mt-12">
         <h2 class="mb-6 text-2xl font-bold flex items-center">
-            <span class="w-2 h-8 bg-red-600 rounded mr-3"></span>
+            <span class="w-2 h-8 bg-yellow-500 rounded mr-3"></span>
             Phim liên quan
         </h2>
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
@@ -275,7 +308,7 @@
             @endforeach
         </div>
         <div class="mt-4">
-            <a href="{{ route('movie.hot') }}" class="inline-flex items-center text-red-500 hover:text-red-400 transition">
+            <a href="{{ route('movie.hot') }}" class="inline-flex items-center text-yellow-400 hover:text-yellow-400 transition">
                 Xem thêm phim hot &rarr;
             </a>
         </div>

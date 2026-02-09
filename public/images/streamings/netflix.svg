@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
+  <rect fill="#E50914" width="120" height="40" rx="4"/>
+  <text x="60" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">NETFLIX</text>
+  <rect x="10" y="10" width="8" height="20" fill="#B20710" opacity="0.3"/>
+  <rect x="102" y="10" width="8" height="20" fill="#B20710" opacity="0.3"/>
+</svg>

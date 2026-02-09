@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateMovie extends CreateRecord
 {
     protected static string $resource = MovieResource::class;
+
+    public function getTitle(): string
+    {
+        return 'Thêm phim mới';
+    }
 }

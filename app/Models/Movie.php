@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class Movie extends Model
 {
@@ -27,6 +29,8 @@ class Movie extends Model
         'duration',
         'view_count',
         'published_at',
+        'director',
+        'cast',
     ];
 
     protected $casts = [
@@ -61,6 +65,13 @@ class Movie extends Model
         return $this->belongsToMany(Category::class)->where('type', 'country');
     }
 
+    public function streamings(): BelongsToMany
+    {
+        return $this->belongsToMany(Streaming::class)
+            ->withPivot('status', 'available_date', 'external_url')
+            ->withTimestamps();
+    }
+
     public function scopeHot($query)
     {
         return $query->where('status', 'hot')->published();
@@ -89,6 +100,80 @@ class Movie extends Model
     public function scopeTop($query)
     {
         return $query->published()->orderByDesc('view_count');
+    }
+
+    /**
+     * Full-text search with relevance scoring
+     * Returns results ordered by relevance (title match > director match > cast match > description match)
+     */
+    public function scopeFullSearch(Builder $query, string $searchTerm): Builder
+    {
+        $normalizedTerm = $this->normalizeSearchTerm($searchTerm);
+
+        if (empty($normalizedTerm) || strlen($normalizedTerm) < 2) {
+            return $query->whereRaw('1 = 0'); // Return no results for short queries
+        }
+
+        // Also search by year if query is numeric (4 digits)
+        $yearFilter = '';
+        if (is_numeric($searchTerm) && strlen($searchTerm) === 4) {
+            $yearFilter = "OR EXTRACT(YEAR FROM release_date) = '{$searchTerm}'";
+        }
+
+        // Order by relevance score, then by view count, then by release date
+        $query->selectRaw(
+            "movies.*,
+            ts_rank(search_text, to_tsquery('simple', ?)) as relevance_score",
+            [$normalizedTerm]
+        );
+
+        // Search conditions: full-text search OR genre match OR year match
+        $query->where(function ($q) use ($normalizedTerm, $yearFilter, $searchTerm) {
+            // Full-text search with relevance scoring
+            $q->whereRaw(
+                "search_text @@ to_tsquery('simple', ?) {$yearFilter}",
+                [$normalizedTerm]
+            );
+
+            // Also search by genre name
+            $q->orWhereHas('genres', function ($genreQuery) use ($searchTerm) {
+                $genreQuery->where('name', 'like', "%{$searchTerm}%");
+            });
+        });
+
+        $query->orderByDesc('relevance_score')
+            ->orderByDesc('view_count')
+            ->orderByDesc('release_date');
+
+        return $query;
+    }
+
+    /**
+     * Normalize search term for Vietnamese full-text search
+     * Converts the search term to a format suitable for tsquery
+     */
+    protected function normalizeSearchTerm(string $term): string
+    {
+        // Trim whitespace
+        $term = trim($term);
+
+        if (empty($term)) {
+            return '';
+        }
+
+        // Replace multiple spaces with single space
+        $term = preg_replace('/\s+/', ' ', $term);
+
+        // Convert to tsquery format: words separated by & (AND)
+        // Using simple search (no stemming) for better Vietnamese support
+        $words = explode(' ', $term);
+        $words = array_filter($words, fn($word) => strlen($word) >= 2);
+
+        if (empty($words)) {
+            return '';
+        }
+
+        return implode(' & ', $words);
     }
 
     public function getYearAttribute(): ?int
@@ -139,7 +224,20 @@ class Movie extends Model
     public function getBackdropUrlAttribute(): string
     {
         if ($this->backdrop) {
+            // Nếu backdrop là URL đầy đủ (http/https), return trực tiếp
+            if (str_starts_with($this->backdrop, 'http')) {
+                return $this->backdrop;
+            }
+            // Ngược lại là local storage
             return asset('storage/' . $this->backdrop);
+        }
+
+        // Fallback: use poster if available
+        if ($this->poster) {
+            if (str_starts_with($this->poster, 'http')) {
+                return $this->poster;
+            }
+            return asset('storage/' . $this->poster);
         }
 
         // Local SVG placeholder

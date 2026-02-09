@@ -24,7 +24,14 @@
       "Bash(composer show:*)",
       "Bash(psql:*)",
       "WebFetch(domain:api.themoviedb.org)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\psql.exe\":*)",
+      "Bash(set:*)",
+      "Bash(sc query:*)",
+      "Bash(net start:*)",
+      "Bash(cmd:*)",
+      "Bash(find:*)"
     ]
   }
 }

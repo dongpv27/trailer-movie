@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 40">
+  <rect fill="#9B1C31" width="130" height="40" rx="4"/>
+  <text x="65" y="27" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="white" text-anchor="middle">CINESTAR</text>
+  <polygon points="20,12 25,20 20,28 15,20" fill="white" opacity="0.4"/>
+</svg>

@@ -1,6 +1,6 @@
 @props(['movie'])
 
-<a href="{{ $movie->url }}" class="group relative overflow-hidden rounded-lg bg-gray-800 transition hover:scale-105 hover:shadow-xl hover:shadow-red-500/20">
+<a href="{{ $movie->url }}" class="group relative overflow-hidden rounded-lg bg-gray-800 transition hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/20">
     <!-- Poster -->
     <div class="aspect-[2/3] overflow-hidden">
         <img
@@ -13,7 +13,7 @@
 
     <!-- Play Button Overlay -->
     <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
-        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-red-600">
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500">
             <svg class="ml-1 h-8 w-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z"/>
             </svg>
@@ -40,6 +40,6 @@
     @if($movie->status === 'hot')
     <span class="absolute left-2 top-2 rounded bg-red-600 px-2 py-1 text-xs font-semibold">HOT</span>
     @elseif($movie->status === 'upcoming')
-    <span class="absolute left-2 top-2 rounded bg-yellow-600 px-2 py-1 text-xs font-semibold">SẮP CHIẾU</span>
+    <span class="absolute left-2 top-2 rounded bg-yellow-500 px-2 py-1 text-xs font-semibold">SẮP CHIẾU</span>
     @endif
 </a>

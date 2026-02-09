@@ -26,7 +26,20 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- H1 Heading -->
-    <h1 class="text-3xl font-bold mb-6">{{ $title ?? 'Danh sách phim' }}</h1>
+    <h1 class="text-3xl font-bold mb-6">
+        @if(isset($query))
+            Tìm kiếm: "{{ $query }}"
+        @else
+            {{ $title ?? 'Danh sách phim' }}
+        @endif
+    </h1>
+
+    <!-- Search Results Info -->
+    @if(isset($query) && $movies->isNotEmpty())
+    <p class="text-gray-400 mb-6">
+        Tìm thấy {{ $movies->total() }} kết quả cho từ khóa "<strong class="text-white">{{ $query }}</strong>"
+    </p>
+    @endif
 
     <!-- Intro SEO (200-300 chữ) -->
     <div class="bg-gray-800 rounded-lg p-6 mb-10">
@@ -46,7 +59,7 @@
 
         <!-- Internal Links -->
         <div class="flex flex-wrap gap-3 mt-6">
-            <a href="{{ route('movie.hot') }}" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition">
+            <a href="{{ route('movie.hot') }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 rounded-lg transition">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -72,7 +85,7 @@
     @if($movies->isNotEmpty())
     <section class="mb-12">
         <h2 class="text-2xl font-bold mb-6 flex items-center">
-            <span class="w-2 h-8 bg-red-600 rounded mr-3"></span>
+            <span class="w-2 h-8 bg-yellow-500 rounded mr-3"></span>
             {{ $title ?? 'Danh sách phim' }}
         </h2>
 
@@ -90,7 +103,7 @@
 
                     <!-- Info -->
                     <div class="p-3">
-                        <h3 class="font-semibold text-sm line-clamp-2 group-hover:text-red-500 transition">
+                        <h3 class="font-semibold text-sm line-clamp-2 group-hover:text-yellow-400 transition">
                             {{ $movie->title }}
                             @if($movie->release_date && $movie->release_date->year)
                             <span class="text-gray-500 text-xs">({{ $movie->release_date->year }})</span>
@@ -121,7 +134,73 @@
     </div>
     @else
     <div class="rounded-lg bg-gray-800 p-8 text-center">
+        @if(isset($query))
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <h3 class="text-xl font-semibold mb-2">Không tìm thấy kết quả nào</h3>
+        <p class="text-gray-400 mb-4">
+            Không tìm thấy phim nào với từ khóa "<strong class="text-white">{{ $query }}</strong>"
+        </p>
+        <p class="text-gray-500 text-sm mb-6">Gợi ý: Thử tìm kiếm với tên phim khác, tên diễn viên, đạo diễn, thể loại hoặc năm phát hành.</p>
+
+        {{-- Suggestions when no results found --}}
+        @if(isset($suggestions))
+            {{-- Hot Movies Suggestions --}}
+            @if($suggestions['hotMovies']->isNotEmpty())
+            <div class="mt-8 text-left">
+                <h4 class="text-lg font-semibold mb-4 flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Phim Hot đang được quan tâm
+                </h4>
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+                    @foreach($suggestions['hotMovies'] as $movie)
+                    <a href="{{ route('movie.show', $movie->slug) }}" class="group">
+                        <div class="relative overflow-hidden rounded-lg bg-gray-700 hover:bg-gray-600 transition">
+                            <div class="aspect-[2/3] overflow-hidden">
+                                <img src="{{ $movie->poster_url }}"
+                                     alt="{{ $movie->title }}"
+                                     loading="lazy"
+                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            </div>
+                            <div class="p-2">
+                                <h5 class="font-medium text-xs line-clamp-2 group-hover:text-yellow-400 transition">
+                                    {{ $movie->title }}
+                                </h5>
+                            </div>
+                        </div>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            {{-- Popular Genres Suggestions --}}
+            @if($suggestions['popularGenres']->isNotEmpty())
+            <div class="mt-8 text-left">
+                <h4 class="text-lg font-semibold mb-4 flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    Thể loại phổ biến
+                </h4>
+                <div class="flex flex-wrap justify-center gap-2">
+                    @foreach($suggestions['popularGenres'] as $genre)
+                    <a href="{{ route('category.genre', $genre->slug) }}"
+                       class="inline-flex items-center px-3 py-1.5 bg-gray-700 hover:bg-yellow-600 rounded-lg transition text-sm">
+                        {{ $genre->name }}
+                        <span class="ml-1.5 text-xs text-gray-400">({{ number_format($genre->movies_count) }})</span>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+        @endif
+        @else
         <p class="text-gray-400">Không có phim nào.</p>
+        @endif
     </div>
     @endif
 

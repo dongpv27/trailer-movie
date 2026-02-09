@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
+  <rect fill="#E03C31" width="120" height="40" rx="4"/>
+  <text x="60" y="29" font-family="Arial Black, Arial, sans-serif" font-size="28" font-weight="900" fill="white" text-anchor="middle">CGV</text>
+  <circle cx="15" cy="20" r="6" fill="white" opacity="0.3"/>
+  <circle cx="105" cy="20" r="6" fill="white" opacity="0.3"/>
+</svg>

@@ -10,6 +10,12 @@ class EditMovie extends EditRecord
 {
     protected static string $resource = MovieResource::class;
 
+    public function getTitle(): string
+    {
+        $record = $this->getRecord();
+        return "Edit phim - {$record->title}";
+    }
+
     protected function getHeaderActions(): array
     {
         return [
