@@ -19,7 +19,7 @@ use Carbon\Carbon;
  * File này tổng hợp tất cả data cần thiết cho TrailerPhim:
  * - Categories (genres, countries, years)
  * - Streamings (cinemas, streaming platforms)
- * - Movies from 2020-2025 (from TMDB API)
+ * - Movies from 2015-2025 (from TMDB API)
  *
  * Usage: php artisan db:seed --class=TRAILERPHIM_ALL_DATA
  *
@@ -118,10 +118,10 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             ['name' => 'Philippines', 'slug' => 'philippines', 'type' => 'country'],
         ];
 
-        // Years (last 10 years + current year + next year)
+        // Years (2015 to current year + 2)
         $years = [];
         $currentYear = (int) date('Y');
-        for ($i = $currentYear + 1; $i >= $currentYear - 10; $i--) {
+        for ($i = $currentYear + 2; $i >= 2015; $i--) {
             $years[] = [
                 'name' => (string) $i,
                 'slug' => (string) $i,
@@ -278,7 +278,7 @@ class TRAILERPHIM_ALL_DATA extends Seeder
         $this->command->info('🎥 Seeding Movies from TMDB...');
         $this->command->newLine();
 
-        // List of popular movies from 2020-2025
+        // List of popular movies from 2015-2025
         $moviesToSeed = [
             // 2025
             ['title' => 'Captain America: Brave New World', 'year' => 2025],
@@ -296,8 +296,6 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             ['title' => 'Joker: Folie à Deux', 'year' => 2024],
             ['title' => 'Kingdom of the Planet of the Apes', 'year' => 2024],
             ['title' => 'Godzilla x Kong: The New Empire', 'year' => 2024],
-            ['title' => 'Beekeeper', 'year' => 2024],
-            ['title' => 'Argylle', 'year' => 2024],
 
             // 2023
             ['title' => 'Oppenheimer', 'year' => 2023],
@@ -307,9 +305,6 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             ['title' => 'John Wick: Chapter 4', 'year' => 2023],
             ['title' => 'Killers of the Flower Moon', 'year' => 2023],
             ['title' => 'The Marvels', 'year' => 2023],
-            ['title' => 'Ant-Man and the Wasp: Quantumania', 'year' => 2023],
-            ['title' => 'Indiana Jones and the Dial of Destiny', 'year' => 2023],
-            ['title' => 'Mission: Impossible - Dead Reckoning', 'year' => 2023],
 
             // 2022
             ['title' => 'Top Gun: Maverick', 'year' => 2022],
@@ -317,9 +312,6 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             ['title' => 'Black Panther: Wakanda Forever', 'year' => 2022],
             ['title' => 'Thor: Love and Thunder', 'year' => 2022],
             ['title' => 'The Batman', 'year' => 2022],
-            ['title' => 'Doctor Strange in the Multiverse of Madness', 'year' => 2022],
-            ['title' => 'Jurassic World Dominion', 'year' => 2022],
-            ['title' => 'Minions: The Rise of Gru', 'year' => 2022],
 
             // 2021
             ['title' => 'Spider-Man: No Way Home', 'year' => 2021],
@@ -328,18 +320,69 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             ['title' => 'Eternals', 'year' => 2021],
             ['title' => 'Fast & Furious 9', 'year' => 2021],
             ['title' => 'No Time to Die', 'year' => 2021],
-            ['title' => 'Free Guy', 'year' => 2021],
-            ['title' => 'The Suicide Squad', 'year' => 2021],
 
             // 2020
             ['title' => 'Tenet', 'year' => 2020],
             ['title' => 'Wonder Woman 1984', 'year' => 2020],
-            ['title' => 'Mulan', 'year' => 2020],
             ['title' => 'Soul', 'year' => 2020],
-            ['title' => 'The Midnight Sky', 'year' => 2020],
             ['title' => 'Enola Holmes', 'year' => 2020],
             ['title' => 'The Trial of the Chicago 7', 'year' => 2020],
-            ['title' => 'Borat Subsequent Moviefilm', 'year' => 2020],
+
+            // 2019
+            ['title' => 'Avengers: Endgame', 'year' => 2019],
+            ['title' => 'Joker', 'year' => 2019],
+            ['title' => 'Star Wars: The Rise of Skywalker', 'year' => 2019],
+            ['title' => 'Once Upon a Time in Hollywood', 'year' => 2019],
+            ['title' => 'The Lion King', 'year' => 2019],
+            ['title' => 'Frozen II', 'year' => 2019],
+            ['title' => 'Spider-Man: Far From Home', 'year' => 2019],
+            ['title' => 'Captain Marvel', 'year' => 2019],
+            ['title' => 'Toy Story 4', 'year' => 2019],
+            ['title' => 'It Chapter Two', 'year' => 2019],
+
+            // 2018
+            ['title' => 'Avengers: Infinity War', 'year' => 2018],
+            ['title' => 'Black Panther', 'year' => 2018],
+            ['title' => 'Incredibles 2', 'year' => 2018],
+            ['title' => 'Jurassic World: Fallen Kingdom', 'year' => 2018],
+            ['title' => 'Mission: Impossible - Fallout', 'year' => 2018],
+            ['title' => 'Bohemian Rhapsody', 'year' => 2018],
+            ['title' => 'Aquaman', 'year' => 2018],
+            ['title' => 'Venom', 'year' => 2018],
+            ['title' => 'Ralph Breaks the Internet', 'year' => 2018],
+
+            // 2017
+            ['title' => 'Star Wars: The Last Jedi', 'year' => 2017],
+            ['title' => 'Beauty and the Beast', 'year' => 2017],
+            ['title' => 'Wonder Woman', 'year' => 2017],
+            ['title' => 'Justice League', 'year' => 2017],
+            ['title' => 'Thor: Ragnarok', 'year' => 2017],
+            ['title' => 'Spider-Man: Homecoming', 'year' => 2017],
+            ['title' => 'Guardians of the Galaxy Vol. 2', 'year' => 2017],
+            ['title' => 'Pirates of the Caribbean: Dead Men Tell No Tales', 'year' => 2017],
+
+            // 2016
+            ['title' => 'Captain America: Civil War', 'year' => 2016],
+            ['title' => 'Rogue One: A Star Wars Story', 'year' => 2016],
+            ['title' => 'Finding Dory', 'year' => 2016],
+            ['title' => 'The Jungle Book', 'year' => 2016],
+            ['title' => 'Suicide Squad', 'year' => 2016],
+            ['title' => 'Doctor Strange', 'year' => 2016],
+            ['title' => 'Deadpool', 'year' => 2016],
+            ['title' => 'Zootopia', 'year' => 2016],
+            ['title' => 'Moana', 'year' => 2016],
+
+            // 2015
+            ['title' => 'Star Wars: The Force Awakens', 'year' => 2015],
+            ['title' => 'Avengers: Age of Ultron', 'year' => 2015],
+            ['title' => 'Jurassic World', 'year' => 2015],
+            ['title' => 'Inside Out', 'year' => 2015],
+            ['title' => 'Furious 7', 'year' => 2015],
+            ['title' => 'Minions', 'year' => 2015],
+            ['title' => 'Spectre', 'year' => 2015],
+            ['title' => 'The Hunger Games: Mockingjay - Part 2', 'year' => 2015],
+            ['title' => 'Cinderella', 'year' => 2015],
+            ['title' => 'Ant-Man', 'year' => 2015],
         ];
 
         $totalMovies = count($moviesToSeed);
@@ -609,19 +652,24 @@ class TRAILERPHIM_ALL_DATA extends Seeder
      */
     private function generateContent(string $title, string $overview, array $genres): string
     {
-        // If TMDB overview exists and is substantial, use it
-        if (!empty($overview) && strlen($overview) > 100) {
-            return $overview;
+        // If TMDB overview exists and is substantial, enhance it
+        if (!empty($overview) && strlen($overview) > 50) {
+            // Use overview but ensure it's not too short
+            if (strlen($overview) > 150) {
+                return $overview;
+            }
+            // Enhance short overview
+            $genreText = !empty($genres) ? implode(', ', array_slice($genres, 0, 2)) : 'điện ảnh';
+            return $overview . " " . $title . " mang đến cho khán giả những trải nghiệm điện ảnh đầy cảm xúc với tiết chế diễn biến căng thẳng. Bộ phim thuộc thể loại {$genreText} hứa hẹn là một tác phẩm đáng xem trong năm nay.";
         }
 
-        // Otherwise, generate generic content
-        $genreText = !empty($genres) ? implode(', ', $genres) : 'điện ảnh';
+        // Otherwise, generate contextual content
+        $genreText = !empty($genres) ? implode(', ', array_slice($genres, 0, 2)) : 'điện ảnh';
 
-        $content = "{$title} là một trong những tác phẩm {$genreText} được mong chợi nhất. Với bối cảnh được xây dựng công phu và câu chuyện đầy kịch tính, bộ phim hứa hẹn mang đến những trải nghiệm thị giác mãn nhãn cho khán giả. ";
+        $content = "{$title} là một tác phẩm {$genreText} được đầu tư công phu về mặt hình ảnh. Bộ phim mở ra một thế giới nơi nhân vật chính phải đối mặt với những thử thách cam go, đặt ra những quyết định khó khăn ảnh hưởng đến số phận của bản thân và những người xung quanh. ";
 
-        $content .= "Nhân vật chính sẽ phải đối mặt với những thử thách cam go, nơi mọi quyết định đều ảnh hưởng đến số phận của nhiều người. Xung đột nội tại và ngoại tại được khắc họa sâu sắc qua từng diễn biến của cốt truyện. ";
-
-        $content .= "Đội ngũ sản xuất đã đầu tư mạnh mẽ vào khâu hình ảnh, tạo nên những thước phim tráng lệ và đậm chất điện ảnh. Đây chắc chắn là một tác phẩm đáng xem trong mùa phim năm nay.";
+        $content .= "Xung đột nội tại và ngoại tại được khai thác sâu sắc, tạo nên những thước phim đầy kịch tính và cảm xúc. ";
+        $content .= "Với bối cảnh được xây dựng tỉ mỉ, ấn tượng, {$title} hứa hẹn mang đến những trải nghiệm thị giác mãn nhãn cho khán giả yêu thích thể loại {$genreText}.";
 
         return $content;
     }
@@ -637,12 +685,12 @@ class TRAILERPHIM_ALL_DATA extends Seeder
 
         if (!empty($genres)) {
             $genreText = implode(' và ', array_slice($genres, 0, 2));
-            $points[] = "Bộ phim kết hợp yếu tố {$genreText}, tạo nên những phaisSelected căng thẳng và cảm xúc mãnh liệt.";
+            $points[] = "Bộ phim kết hợp yếu tố {$genreText}, tạo nên những phân cảnh căng thẳng và cảm xúc mãnh liệt.";
         }
 
         if ($releaseDate) {
             $releaseYear = date('Y', strtotime($releaseDate));
-            $points[] = "Được khởi chiếu vào năm {$releaseYear}, tác phẩm nhanh chóng trở thành hiện tượng và thu hút lượng lớn khán giả tại rạp.";
+            $points[] = "Được khởi chiếu vào năm {$releaseYear}, tác phẩm nhanh chóng trở thành hiện tượng và thu hút lượng lớn khán giả.";
         }
 
         return implode("\n\n", $points);
@@ -751,6 +799,7 @@ class TRAILERPHIM_ALL_DATA extends Seeder
     {
         $genreIds = [];
         $countryIds = [];
+        $yearIds = [];
 
         // Map TMDB genres to local categories
         $genreMapping = [
@@ -763,14 +812,14 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             'Drama' => 'tinh-cam',
             'Family' => 'gia-dinh',
             'Fantasy' => 'vien-tuong',
-            'History' => 'lich-su',
+            'History' => 'kich-tinh',
             'Horror' => 'kinh-di',
             'Mystery' => 'bi-an',
-            'Romance' => 'lang-man',
-            'Science Fiction' => 'khoa-hoc-vien-tuong',
+            'Romance' => 'tinh-cam',
+            'Science Fiction' => 'vien-tuong',
             'Thriller' => 'kich-tinh',
             'War' => 'chien-tranh',
-            'Western' => 'tay-duong',
+            'Western' => 'phieu-luu',
         ];
 
         // Process genres
@@ -825,8 +874,20 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             }
         }
 
+        // Attach year category
+        if (isset($details['release_date'])) {
+            $releaseYear = date('Y', strtotime($details['release_date']));
+            $yearCategory = Category::where('name', (string) $releaseYear)
+                ->where('type', 'year')
+                ->first();
+
+            if ($yearCategory) {
+                $yearIds[] = $yearCategory->id;
+            }
+        }
+
         // Attach all categories
-        $allCategoryIds = array_merge($genreIds, $countryIds);
+        $allCategoryIds = array_merge($genreIds, $countryIds, $yearIds);
         if (!empty($allCategoryIds)) {
             $movie->categories()->attach($allCategoryIds);
         }

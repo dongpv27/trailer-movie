@@ -39,7 +39,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="mt-8">
+    <div class="mt-8 mb-12">
         {{ $posts->appends(request()->query())->links() }}
     </div>
     @else

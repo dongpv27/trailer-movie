@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -75,6 +76,11 @@ class Movie extends Model
         return $this->belongsToMany(Streaming::class)
             ->withPivot('status', 'available_date', 'external_url')
             ->withTimestamps();
+    }
+
+    public function pageVisits(): MorphMany
+    {
+        return $this->morphMany(PageVisit::class, 'visitable');
     }
 
     public function scopeHot($query)

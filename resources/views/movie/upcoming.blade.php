@@ -113,7 +113,7 @@
     </section>
 
     <!-- Pagination -->
-    <div class="mt-8">
+    <div class="mt-8 mb-12">
         {{ $movies->appends(request()->query())->links() }}
     </div>
     @else

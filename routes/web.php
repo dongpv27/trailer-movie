@@ -5,6 +5,7 @@ use App\Http\Controllers\MovieController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 
 // Homepage
@@ -31,6 +32,11 @@ Route::get('/tin-dien-anh/{slug}', [PostController::class, 'show'])->name('post.
 
 // Sitemap
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+// Analytics tracking
+Route::post('/analytics/track-trailer', [AnalyticsController::class, 'trackTrailerPlay'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+    ->name('analytics.track.trailer');
 
 // Debug routes
 require_once __DIR__ . '/check_movie.php';

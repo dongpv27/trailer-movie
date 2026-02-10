@@ -3,8 +3,23 @@
 <div
     x-data="{
         playing: false,
+        tracked: false,
         embedUrl: '',
         play() {
+            if (!this.tracked) {
+                fetch('{{ route('analytics.track.trailer') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        trailer_id: {{ $trailer->id }},
+                        _token: '{{ csrf_token() }}'
+                    })
+                }).catch(() => {});
+                this.tracked = true;
+            }
             this.embedUrl = 'https://www.youtube.com/embed/{{ $trailer->youtube_id }}?autoplay=1&rel=0&modestbranding=1&playsinline=1';
             this.playing = true;
         }

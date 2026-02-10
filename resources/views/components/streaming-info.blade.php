@@ -50,7 +50,7 @@
         @endforeach
         </div>
     @else
-        <p class="text-gray-400 text-sm">Chưa có thông tin chính thức</p>
+        <p class="text-gray-400 text-sm">Chưa có thông tin</p>
     @endif
 </div>
 @endif

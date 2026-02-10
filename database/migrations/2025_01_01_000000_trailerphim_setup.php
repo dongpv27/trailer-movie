@@ -6,19 +6,15 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 /**
- * TRAILERPHIM - ALL TABLES IN ONE FILE
+ * TRAILERPHIM - COMPLETE DATABASE SETUP
  *
- * File này tổng hợp tất cả các bảng và cột cần thiết cho TrailerPhim.
- * Chạy 1 file này là đủ để migrate toàn bộ database.
+ * File migration duy nhất chứa toàn bộ cấu trúc database cho TrailerPhim.
+ * Chạy 1 lần là hoàn tất setup database.
  *
- * Usage: php artisan migrate --path=database/migrations/TRAILERPHIM_ALL_TABLES.php
- * Rollback: php artisan migrate:rollback --step=1
+ * Chạy: php artisan migrate:fresh --seed
  */
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         // ============================================
@@ -81,6 +77,7 @@ return new class extends Migration
             $table->string('thumbnail')->nullable();
             $table->boolean('is_main')->default(false);
             $table->unsignedInteger('sort')->default(0);
+            $table->unsignedInteger('play_count')->default(0);
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
 
@@ -88,6 +85,7 @@ return new class extends Migration
             $table->index('movie_id');
             $table->index('is_main');
             $table->index('published_at');
+            $table->index('play_count');
         });
 
         // ============================================
@@ -159,6 +157,38 @@ return new class extends Migration
             $table->timestamp('available_date')->nullable();
             $table->string('external_url')->nullable();
             $table->timestamps();
+        });
+
+        // ============================================
+        // TABLE: PAGE_VISITS (Analytics)
+        // ============================================
+        Schema::create('page_visits', function (Blueprint $table) {
+            $table->id();
+            $table->string('url', 500);
+            $table->string('route_name')->nullable();
+            $table->nullableMorphs('visitable');
+            $table->string('session_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->string('user_agent')->nullable();
+            $table->string('referer')->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestamp('visited_at')->index();
+        });
+
+        // ============================================
+        // TABLE: TRAILER_PLAYS (Analytics)
+        // ============================================
+        Schema::create('trailer_plays', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('trailer_id')->constrained()->onDelete('cascade');
+            $table->foreignId('movie_id')->constrained()->onDelete('cascade');
+            $table->string('session_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->string('user_agent')->nullable();
+            $table->timestamp('played_at')->index();
+
+            $table->index('trailer_id');
+            $table->index('movie_id');
         });
 
         // ============================================
@@ -260,9 +290,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         // Drop triggers (PostgreSQL)
@@ -274,6 +301,8 @@ return new class extends Migration
 
         // Drop all tables in correct order (respecting foreign keys)
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('trailer_plays');
+        Schema::dropIfExists('page_visits');
         Schema::dropIfExists('movie_streaming');
         Schema::dropIfExists('streamings');
         Schema::dropIfExists('category_movie');
