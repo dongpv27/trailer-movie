@@ -53,14 +53,14 @@ class MovieResource extends Resource
                                     ->columnSpanFull(),
                                 Forms\Components\DatePicker::make('release_date')
                                     ->label('Ngày phát hành'),
-                                Forms\Components\Select::make('status')
+                                Forms\Components\CheckboxList::make('statuses')
                                     ->label('Trạng thái')
                                     ->options([
                                         'hot' => 'Hot',
                                         'upcoming' => 'Sắp chiếu',
                                         'released' => 'Đang chiếu',
                                     ])
-                                    ->default('released')
+                                    ->default(['released'])
                                     ->required(),
                                 Forms\Components\TextInput::make('country')
                                     ->label('Quốc gia')
@@ -173,15 +173,27 @@ class MovieResource extends Resource
                     ->label('Tên gốc')
                     ->searchable()
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('statuses')
                     ->label('Trạng thái')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): array => collect($state)->map(fn($s) => match($s) {
                         'hot' => 'danger',
                         'upcoming' => 'warning',
                         'released' => 'success',
                         default => 'gray',
-                    }),
+                    })->toArray())
+                    ->formatStateUsing(function ($state) {
+                        if (is_array($state)) {
+                            return collect($state)->map(fn($s) => match($s) {
+                                'hot' => 'Hot',
+                                'upcoming' => 'Sắp chiếu',
+                                'released' => 'Đang chiếu',
+                                default => $s,
+                            })->toArray();
+                        }
+                        return $state;
+                    })
+                    ->separator(),
                 Tables\Columns\TextColumn::make('release_date')
                     ->label('Ngày phát hành')
                     ->date()
@@ -201,8 +213,15 @@ class MovieResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                Tables\Filters\SelectFilter::make('statuses')
                     ->label('Trạng thái')
+                    ->query(function ($query, $data) {
+                        if (!empty($data['value'])) {
+                            $query->whereHas('statuses', function ($q) use ($data) {
+                                $q->where('status', $data['value']);
+                            });
+                        }
+                    })
                     ->options([
                         'hot' => 'Hot',
                         'upcoming' => 'Sắp chiếu',
@@ -210,6 +229,7 @@ class MovieResource extends Resource
                     ]),
             ])
             ->actions([
+                Actions\ViewAction::make(),
                 Actions\EditAction::make(),
                 Actions\DeleteAction::make(),
             ])
@@ -238,5 +258,12 @@ class MovieResource extends Resource
             'create' => Pages\CreateMovie::route('/create'),
             'edit' => Pages\EditMovie::route('/{record}/edit'),
         ];
+    }
+
+    public static function afterSave($record, array $data): void
+    {
+        if (isset($data['statuses'])) {
+            $record->syncStatuses((array) $data['statuses']);
+        }
     }
 }

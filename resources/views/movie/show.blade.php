@@ -162,12 +162,18 @@
                     @endif
                     <p>
                         <strong>Trạng thái:</strong>
-                        @if($movie->status === 'upcoming')
-                            <span class="ml-2 rounded bg-yellow-600/20 px-2 py-1 text-yellow-400 text-sm">Sắp chiếu</span>
-                        @elseif($movie->status === 'released')
-                            <span class="ml-2 rounded bg-green-600/20 px-2 py-1 text-green-400 text-sm">Đang chiếu</span>
-                        @elseif($movie->status === 'hot')
-                            <span class="ml-2 rounded bg-red-600/20 px-2 py-1 text-red-400 text-sm">Hot</span>
+                        @if(is_array($movie->statuses) && count($movie->statuses) > 0)
+                            @foreach($movie->statuses as $status)
+                                @if($status === 'upcoming')
+                                    <span class="ml-2 rounded bg-yellow-600/20 px-2 py-1 text-yellow-400 text-sm">Sắp chiếu</span>
+                                @elseif($status === 'released')
+                                    <span class="ml-2 rounded bg-green-600/20 px-2 py-1 text-green-400 text-sm">Đang chiếu</span>
+                                @elseif($status === 'hot')
+                                    <span class="ml-2 rounded bg-red-600/20 px-2 py-1 text-red-400 text-sm">Hot</span>
+                                @endif
+                            @endforeach
+                        @else
+                            <span class="text-gray-400">Đang cập nhật</span>
                         @endif
                     </p>
                     @if($movie->country)
@@ -183,9 +189,9 @@
                 <p class="text-gray-300 leading-relaxed">{!! $movie->notable_points !!}</p>
                 @else
                 <p class="text-gray-300 leading-relaxed">
-                    @if($movie->status === 'hot')
+                    @if(in_array('hot', $movie->statuses ?? []))
                         {{ $movie->title }} là một trong những bộ phim được mong chờ nhất{{ $releaseYear ? " năm {$releaseYear}" : '' }}. Phim thu hút sự quan tâm đặc biệt từ khán giả nhờ vào nội dung hấp dẫn và yếu tố đổi mới.
-                    @elseif($movie->status === 'upcoming')
+                    @elseif(in_array('upcoming', $movie->statuses ?? []))
                         {{ $movie->title }} đang được khán giả vô cùng mong chờ. Trailer chính thức đã được công bố, cho thấy những hình ảnh ấn tượng về bộ phim.
                     @else
                         {{ $movie->title }} đã và đang tạo được sức hút lớn{{ $movie->country ? " tại {$movie->country}" : '' }}. Đây là tác phẩm nằm trong danh sách những phim đáng xem{{ $releaseYear ? " năm {$releaseYear}" : '' }}.
@@ -255,7 +261,7 @@
                     <a href="{{ route('movie.hot') }}" class="block px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                         🎬 Phim Hot
                     </a>
-                    @if($movie->status === 'upcoming')
+                    @if(in_array('upcoming', $movie->statuses ?? []))
                     <a href="{{ route('category.upcoming') }}" class="block px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                         ⏰ Phim Sắp Chiếu
                     </a>

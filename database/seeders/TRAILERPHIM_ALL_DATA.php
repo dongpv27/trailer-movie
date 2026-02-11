@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Movie;
+use App\Models\MovieStatus;
 use App\Models\Post;
 use App\Models\Streaming;
 use App\Models\Trailer;
@@ -560,15 +561,20 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             $cast = implode(', ', $castNames);
         }
 
-        // Determine status based on release date
+        // Determine statuses based on release date
         $releaseDate = $details['release_date'] ?? null;
-        $status = 'released';
+        $statuses = ['released']; // Default status
 
         if ($releaseDate) {
             $releaseDateObj = Carbon::parse($releaseDate);
             if ($releaseDateObj->isFuture()) {
-                $status = 'upcoming';
+                $statuses = ['upcoming'];
             }
+        }
+
+        // Randomly add 'hot' status to some movies (about 30%)
+        if (rand(1, 100) <= 30) {
+            $statuses[] = 'hot';
         }
 
         // Generate SEO content
@@ -595,7 +601,6 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             'poster' => $details['poster_path'] ? "{$this->tmdbImageBaseUrl}/w500{$details['poster_path']}" : null,
             'backdrop' => $details['backdrop_path'] ? "{$this->tmdbImageBaseUrl}/w1280{$details['backdrop_path']}" : null,
             'release_date' => $releaseDate,
-            'status' => $status,
             'duration' => $details['runtime'] ?? null,
             'country' => null, // Will be set from categories
             'view_count' => 0,
@@ -603,6 +608,14 @@ class TRAILERPHIM_ALL_DATA extends Seeder
             'director' => $director,
             'cast' => $cast,
         ]);
+
+        // Attach statuses using pivot table
+        foreach ($statuses as $status) {
+            MovieStatus::create([
+                'movie_id' => $movie->id,
+                'status' => $status,
+            ]);
+        }
 
         return $movie;
     }

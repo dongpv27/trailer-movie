@@ -25,7 +25,6 @@ class Movie extends Model
         'poster',
         'backdrop',
         'release_date',
-        'status',
         'country',
         'duration',
         'view_count',
@@ -44,7 +43,7 @@ class Movie extends Model
     /**
      * Accessors to append to model array form.
      */
-    protected $appends = ['url', 'year', 'poster_url', 'backdrop_url'];
+    protected $appends = ['url', 'year', 'poster_url', 'backdrop_url', 'statuses'];
 
     public function trailers(): HasMany
     {
@@ -83,21 +82,27 @@ class Movie extends Model
         return $this->morphMany(PageVisit::class, 'visitable');
     }
 
+    public function statuses(): HasMany
+    {
+        return $this->hasMany(MovieStatus::class);
+    }
+
     public function scopeHot($query)
     {
-        return $query->where('status', 'hot')->published();
+        return $query->whereHas('statuses', fn($q) => $q->where('status', 'hot'))
+            ->published();
     }
 
     public function scopeUpcoming($query)
     {
-        return $query->where('status', 'upcoming')
+        return $query->whereHas('statuses', fn($q) => $q->where('status', 'upcoming'))
             ->where('release_date', '>=', now())
             ->published();
     }
 
     public function scopeReleased($query)
     {
-        return $query->where('status', 'released')
+        return $query->whereHas('statuses', fn($q) => $q->where('status', 'released'))
             ->where('release_date', '<=', now())
             ->published();
     }
@@ -260,5 +265,40 @@ class Movie extends Model
   <text x="960" y="600" fill="#9ca3af" font-family="sans-serif" font-size="32" text-anchor="middle">TrailerPhim</text>
 </svg>';
         return 'data:image/svg+xml;base64,' . base64_encode($svg);
+    }
+
+    public function hasStatus(string $status): bool
+    {
+        return $this->statuses()->where('status', $status)->exists();
+    }
+
+    public function getStatusesAttribute(): array
+    {
+        // Check if relationship is already loaded, otherwise query the database
+        if ($this->relationLoaded('statuses')) {
+            return $this->getRelation('statuses')->pluck('status')->toArray();
+        }
+
+        return $this->statuses()->pluck('status')->toArray();
+    }
+
+    public function addStatus(string $status): void
+    {
+        if (!$this->hasStatus($status)) {
+            $this->statuses()->create(['status' => $status]);
+        }
+    }
+
+    public function removeStatus(string $status): void
+    {
+        $this->statuses()->where('status', $status)->delete();
+    }
+
+    public function syncStatuses(array $statuses): void
+    {
+        $this->statuses()->delete();
+        foreach ($statuses as $status) {
+            $this->statuses()->create(['status' => $status]);
+        }
     }
 }

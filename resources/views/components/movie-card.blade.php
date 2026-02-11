@@ -36,10 +36,18 @@
         </div>
     </div>
 
-    <!-- Status Badge -->
-    @if($movie->status === 'hot')
-    <span class="absolute left-2 top-2 rounded bg-red-600 px-2 py-1 text-xs font-semibold">HOT</span>
-    @elseif($movie->status === 'upcoming')
-    <span class="absolute left-2 top-2 rounded bg-yellow-500 px-2 py-1 text-xs font-semibold">SẮP CHIẾU</span>
-    @endif
+    <!-- Status Badges -->
+    <div class="absolute left-2 top-2 flex flex-col gap-1 items-start">
+        @if(is_array($movie->statuses) && count($movie->statuses) > 0)
+            @foreach($movie->statuses as $status)
+                @if($status === 'hot')
+                    <span class="inline-block whitespace-nowrap rounded bg-red-600 px-2 py-0.5 text-xs font-semibold shadow-lg">HOT</span>
+                @elseif($status === 'upcoming')
+                    <span class="inline-block whitespace-nowrap rounded bg-yellow-500 px-2 py-0.5 text-xs font-semibold shadow-lg">SẮP CHIẾU</span>
+                @elseif($status === 'released')
+                    <span class="inline-block whitespace-nowrap rounded bg-green-600 px-2 py-0.5 text-xs font-semibold shadow-lg">ĐANG CHIẾU</span>
+                @endif
+            @endforeach
+        @endif
+    </div>
 </a>

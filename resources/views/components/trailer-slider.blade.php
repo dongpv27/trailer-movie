@@ -42,8 +42,8 @@
                             <a :href="movie.url">
                                 <!-- Badge -->
                                 <span class="mb-3 inline-block rounded px-3 py-1 text-sm font-bold tracking-wide"
-                                      :class="movie.status === 'hot' ? 'bg-red-600 text-white' : 'bg-yellow-500 text-black'"
-                                      x-text="movie.status === 'hot' ? 'HOT' : 'SẮP CHIẾU'"></span>
+                                      :class="movie.statuses && movie.statuses.includes('hot') ? 'bg-red-600 text-white' : 'bg-yellow-500 text-black'"
+                                      x-text="movie.statuses && movie.statuses.includes('hot') ? 'HOT' : 'SẮP CHIẾU'"></span>
 
                                 <!-- Title -->
                                 <h2 class="mb-3 text-2xl font-bold text-white md:text-4xl lg:text-5xl hover:text-yellow-400 transition" x-text="movie.title"></h2>
@@ -124,7 +124,7 @@
                 'url' => $m->url,
                 'year' => $m->year,
                 'duration' => $m->duration ?? 0,
-                'status' => $m->status,
+                'statuses' => $m->statuses ?? [],
             ];
         })->values());
 

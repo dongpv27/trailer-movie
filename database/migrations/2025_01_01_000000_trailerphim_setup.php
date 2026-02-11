@@ -48,7 +48,7 @@ return new class extends Migration
             $table->string('poster')->nullable();
             $table->string('backdrop')->nullable();
             $table->date('release_date')->nullable();
-            $table->enum('status', ['hot', 'upcoming', 'released'])->default('released');
+            // status column removed - using movie_statuses pivot table instead
             $table->string('country')->nullable();
             $table->string('director')->nullable();
             $table->string('cast')->nullable();
@@ -59,10 +59,22 @@ return new class extends Migration
 
             // Indexes for performance
             $table->index('slug');
-            $table->index('status');
             $table->index('release_date');
             $table->index('view_count');
             $table->index('published_at');
+        });
+
+        // ============================================
+        // TABLE: MOVIE_STATUSES (pivot table for multi-status)
+        // ============================================
+        Schema::create('movie_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('movie_id')->constrained()->onDelete('cascade');
+            $table->enum('status', ['hot', 'upcoming', 'released']);
+            $table->timestamps();
+
+            $table->unique(['movie_id', 'status']);
+            $table->index('status');
         });
 
         // ============================================
@@ -307,6 +319,7 @@ return new class extends Migration
         Schema::dropIfExists('streamings');
         Schema::dropIfExists('category_movie');
         Schema::dropIfExists('categories');
+        Schema::dropIfExists('movie_statuses');
         Schema::dropIfExists('trailers');
         Schema::dropIfExists('movies');
         Schema::dropIfExists('posts');

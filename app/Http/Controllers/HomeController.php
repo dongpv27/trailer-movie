@@ -10,36 +10,34 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $cacheKey = 'home-page-data-v2';
+        $cacheKey = 'home-page-data-v3';
 
         $data = cache()->remember($cacheKey, 1800, function () {
             $hotMovies = Movie::hot()
-                ->with(['categories', 'mainTrailer'])
+                ->with(['categories', 'mainTrailer', 'statuses'])
                 ->orderByDesc('release_date')
-                ->limit(12)
-                ->get();
-
-            $upcomingMovies = Movie::upcoming()
-                ->with(['categories', 'mainTrailer'])
-                ->orderBy('release_date')
-                ->limit(12)
+                ->limit(22)
                 ->get();
 
             return [
-                'sliderMovies' => $hotMovies->take(5)->concat($upcomingMovies->take(5)),
+                'sliderMovies' => $hotMovies->take(10),
 
                 'hotMovies' => $hotMovies,
 
-                'upcomingMovies' => $upcomingMovies,
+                'upcomingMovies' => Movie::upcoming()
+                    ->with(['categories', 'mainTrailer', 'statuses'])
+                    ->orderBy('release_date')
+                    ->limit(12)
+                    ->get(),
 
                 'releasedMovies' => Movie::released()
-                    ->with(['categories', 'mainTrailer'])
+                    ->with(['categories', 'mainTrailer', 'statuses'])
                     ->orderByDesc('release_date')
                     ->limit(12)
                     ->get(),
 
                 'topMovies' => Movie::top()
-                    ->with(['categories', 'mainTrailer'])
+                    ->with(['categories', 'mainTrailer', 'statuses'])
                     ->limit(10)
                     ->get(),
 
