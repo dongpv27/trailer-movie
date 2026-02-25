@@ -176,22 +176,17 @@ class MovieResource extends Resource
                 Tables\Columns\TextColumn::make('statuses')
                     ->label('Trạng thái')
                     ->badge()
-                    ->color(fn ($state): array => collect($state)->map(fn($s) => match($s) {
+                    ->color(fn (string $state): string => match($state) {
                         'hot' => 'danger',
                         'upcoming' => 'warning',
                         'released' => 'success',
                         default => 'gray',
-                    })->toArray())
-                    ->formatStateUsing(function ($state) {
-                        if (is_array($state)) {
-                            return collect($state)->map(fn($s) => match($s) {
-                                'hot' => 'Hot',
-                                'upcoming' => 'Sắp chiếu',
-                                'released' => 'Đang chiếu',
-                                default => $s,
-                            })->toArray();
-                        }
-                        return $state;
+                    })
+                    ->formatStateUsing(fn (string $state): string => match($state) {
+                        'hot' => 'Hot',
+                        'upcoming' => 'Sắp chiếu',
+                        'released' => 'Đang chiếu',
+                        default => $state,
                     })
                     ->separator(),
                 Tables\Columns\TextColumn::make('release_date')
